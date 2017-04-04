@@ -1,0 +1,340 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/andris9/mailparser#readme"
+
+    >mailparser (v2.0.2)</a>
+</h1>
+<h4>Parse e-mails</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.mailparser">module mailparser</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.mailparser.MailParser">
+            function <span class="apidocSignatureSpan">mailparser.</span>MailParser
+            <span class="apidocSignatureSpan">(config)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.mailparser.simpleParser">
+            function <span class="apidocSignatureSpan">mailparser.</span>simpleParser
+            <span class="apidocSignatureSpan">(input, callback)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.mailparser" id="apidoc.module.mailparser">module mailparser</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.mailparser.MailParser" id="apidoc.element.mailparser.MailParser">
+        function <span class="apidocSignatureSpan">mailparser.</span>MailParser
+        <span class="apidocSignatureSpan">(config)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">class MailParser extends Transform {
+    constructor(config) {
+        let options = {
+            readableObjectMode: true,
+            writableObjectMode: false
+        };
+        super(options);
+
+        this.options = config || {};
+        this.splitter = new Splitter();
+        this.finished = false;
+        this.waitingEnd = false;
+
+        this.headers = false;
+
+        this.endReceived = false;
+        this.reading = false;
+        this.errored = false;
+
+        this.tree = false;
+        this.curnode = false;
+        this.waitUntilAttachmentEnd = false;
+        this.attachmentCallback = false;
+
+        this.hasHtml = false;
+        this.hasText = false;
+
+        this.text = false;
+        this.html = false;
+        this.textAsHtml = false;
+
+        this.attachmentList = [];
+
+        this.splitter.on(&#x27;readable&#x27;, () =&#x3e; {
+            if (this.reading) {
+                return false;
+            }
+            this.readData();
+        });
+
+        this.splitter.on(&#x27;end&#x27;, () =&#x3e; {
+            this.endReceived = true;
+            if (!this.reading) {
+                this.endStream();
+            }
+        });
+
+        this.splitter.on(&#x27;error&#x27;, err =&#x3e; {
+            this.errored = true;
+            if (typeof this.waitingEnd === &#x27;function&#x27;) {
+                return this.waitingEnd(err);
+            }
+            this.emit(&#x27;error&#x27;, err);
+        });
+    }
+
+    readData() {
+        if (this.errored) {
+            return false;
+        }
+        this.reading = true;
+        let data = this.splitter.read();
+        if (data === null) {
+            this.reading = false;
+            if (this.endReceived) {
+                this.endStream();
+            }
+            return;
+        }
+
+        this.processChunk(data, err =&#x3e; {
+            if (err) {
+                if (typeof this.waitingEnd === &#x27;function&#x27;) {
+                    return this.waitingEnd(err);
+                }
+                return this.emit(&#x27;error&#x27;, err);
+            }
+            setImmediate(() =&#x3e; this.readData());
+        });
+    }
+
+    endStream() {
+        this.finished = true;
+        if (typeof this.waitingEnd === &#x27;function&#x27;) {
+            this.waitingEnd();
+        }
+    }
+
+    _transform(chunk, encoding, done) {
+        if (!chunk || !chunk.length) {
+            return done();
+        }
+
+        if (this.splitter.write(chunk) === false) {
+            return this.splitter.once(&#x27;drain&#x27;, () =&#x3e; {
+                done();
+            });
+        } else {
+            return done();
+        }
+    }
+
+    _flush(done) {
+        setImmediate(() =&#x3e; this.splitter.end());
+        if (this.finished) {
+            return this.cleanup(done);
+        }
+        this.waitingEnd = () =&#x3e; this.cleanup(done);
+    }
+
+    cleanup(done) {
+        if (this.curnode &#x26;&#x26; this.curnode.decoder) {
+            this.curnode.decoder.end();
+        }
+        setImmediate(() =&#x3e; {
+            this.push(this.getTextContent());
+            done();
+        });
+    }
+
+    processHeaders(lines) {
+        let headers = new Map();
+        (lines || []).forEach(line =&#x3e; {
+            let key = line.key;
+            let value = ((libmime.decodeHeader(line.line) || {}).value || &#x27;&#x27;).toString().trim();
+            value = Buffer.from(value, &#x27;binary&#x27;).toString();
+            switch (key) {
+                case &#x27;content-type&#x27;:
+                case &#x27;content-disposition&#x27;:
+                case &#x27;dkim-signature&#x27;:
+                    value = libmime.parseHeaderValue(value);
+                    Object.keys(value &#x26;&#x26; value.params || {}).forEach(key =&#x3e; {
+                        try {
+                            value.params[key] = libmime.decodeWords(value.params[key]);
+                        } catch (E) {
+                            // ignore, keep as is
+                        }
+                    });
+                    break;
+                case &#x27;date&#x27;:
+                    value = new Date(value);
+                    if (!value || value.toString() === &#x27;Invalid Date&#x27; || !value.getTime()) {
+                        // date parsing failed :S
+                        value = new Date();
+                    } ...</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.mailparser.simpleParser" id="apidoc.element.mailparser.simpleParser">
+        function <span class="apidocSignatureSpan">mailparser.</span>simpleParser
+        <span class="apidocSignatureSpan">(input, callback)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">(input, callback) =&#x3e; {
+    let promise;
+    if (!callback) {
+        promise = new Promise((resolve, reject) =&#x3e; {
+            callback = callbackPromise(resolve, reject);
+        });
+    }
+
+    let mail = {
+        attachments: []
+    };
+
+    let parser = new MailParser();
+
+    parser.on(&#x27;headers&#x27;, headers =&#x3e; {
+        mail.headers = headers;
+    });
+
+    parser.on(&#x27;data&#x27;, data =&#x3e; {
+        if (data.type === &#x27;text&#x27;) {
+            Object.keys(data).forEach(key =&#x3e; {
+                if ([&#x27;text&#x27;, &#x27;html&#x27;, &#x27;textAsHtml&#x27;].includes(key)) {
+                    mail[key] = data[key];
+                }
+            });
+        }
+
+        if (data.type === &#x27;attachment&#x27;) {
+            mail.attachments.push(data);
+
+            let chunks = [];
+            let chunklen = 0;
+            data.content.on(&#x27;readable&#x27;, () =&#x3e; {
+                let chunk;
+                while ((chunk = data.content.read()) !== null) {
+                    chunks.push(chunk);
+                    chunklen += chunk.length;
+                }
+            });
+
+            data.content.on(&#x27;end&#x27;, () =&#x3e; {
+                data.content = Buffer.concat(chunks, chunklen);
+                data.release();
+            });
+        }
+    });
+
+    parser.on(&#x27;end&#x27;, () =&#x3e; {
+        [&#x27;subject&#x27;, &#x27;references&#x27;, &#x27;date&#x27;, &#x27;to&#x27;, &#x27;from&#x27;, &#x27;to&#x27;, &#x27;cc&#x27;, &#x27;bcc&#x27;, &#x27;message-id&#x27;, &#x27;in-reply-to&#x27;, &#x27;reply-to&#x27;].forEach(key =&#x3e; {
+            if (mail.headers.has(key)) {
+                mail[key.replace(/\-([a-z])/g, (m, c) =&#x3e; c.toUpperCase())] = mail.headers.get(key);
+            }
+        });
+
+        parser.updateImageLinks((attachment, done) =&#x3e; done(false, &#x27;data:&#x27; + attachment.contentType + &#x27;;base64,&#x27; + attachment.content
+.toString(&#x27;base64&#x27;)), (err, html) =&#x3e; {
+            if (err) {
+                return callback(err);
+            }
+            mail.html = html;
+
+            callback(null, mail);
+        });
+    });
+
+    if (typeof input === &#x27;string&#x27;) {
+        parser.end(Buffer.from(input));
+    } else if (Buffer.isBuffer(input)) {
+        parser.end(input);
+    } else {
+        input.pipe(parser);
+    }
+
+    return promise;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
