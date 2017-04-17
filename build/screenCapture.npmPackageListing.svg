@@ -1,14 +1,14 @@
 <svg height="174" width="720" xmlns="http://www.w3.org/2000/svg">
 <rect height="174" fill="#555" width="720"></rect>
 <text fill="#7f7" font-family="Courier New" font-size="12" xml:space="preserve">
-<tspan x="10" y="26">  0.  2017-04-04 00:42:51 +0000    57370 byte  .</tspan>
-<tspan x="10" y="42">  1.  2017-04-04 00:42:51 +0000    13175 byte  LICENSE</tspan>
-<tspan x="10" y="58">  2.  2017-04-04 00:42:51 +0000     9029 byte  README.md</tspan>
-<tspan x="10" y="74">  3.  2017-04-04 00:42:51 +0000      173 byte  index.js</tspan>
-<tspan x="10" y="90">  4.  2017-04-04 00:42:51 +0000     1168 byte  lib/flowed-decoder.js</tspan>
-<tspan x="10" y="106">  5.  2017-04-04 00:42:51 +0000    28191 byte  lib/mail-parser.js</tspan>
-<tspan x="10" y="122">  6.  2017-04-04 00:42:51 +0000     2382 byte  lib/simple-parser.js</tspan>
-<tspan x="10" y="138">  7.  2017-04-04 00:42:51 +0000      683 byte  lib/stream-hash.js</tspan>
-<tspan x="10" y="154">  8.  2017-04-04 00:42:51 +0000     2569 byte  package.json</tspan>
+<tspan x="10" y="26">  0.  2017-04-17 14:57:45 +0000    48733 bytes  .</tspan>
+<tspan x="10" y="42">  1.  2017-04-17 14:57:45 +0000    13175 bytes  LICENSE</tspan>
+<tspan x="10" y="58">  2.  2017-04-17 14:57:45 +0000      387 bytes  README.md</tspan>
+<tspan x="10" y="74">  3.  2017-04-17 14:57:45 +0000      173 bytes  index.js</tspan>
+<tspan x="10" y="90">  4.  2017-04-17 14:57:45 +0000     1168 bytes  lib/flowed-decoder.js</tspan>
+<tspan x="10" y="106">  5.  2017-04-17 14:57:45 +0000    28195 bytes  lib/mail-parser.js</tspan>
+<tspan x="10" y="122">  6.  2017-04-17 14:57:45 +0000     2382 bytes  lib/simple-parser.js</tspan>
+<tspan x="10" y="138">  7.  2017-04-17 14:57:45 +0000      683 bytes  lib/stream-hash.js</tspan>
+<tspan x="10" y="154">  8.  2017-04-17 14:57:45 +0000     2570 bytes  package.json</tspan>
 </text>
 </svg>

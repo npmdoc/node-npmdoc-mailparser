@@ -1,4 +1,4 @@
-<div class="apidocDiv">
+<html><head></head><body><div class="apidocDiv">
 <style>
 /*csslint
 */
@@ -47,17 +47,10 @@
 }
 </style>
 <h1>api documentation for
-    <a
-
-        href="https://github.com/andris9/mailparser#readme"
-
-    >mailparser (v2.0.3)</a>
+    <a href="https://github.com/andris9/mailparser#readme">mailparser (v2.0.3)</a>
 </h1>
 <h4>Parse e-mails</h4>
-<div class="apidocSectionDiv"><a
-    href="#apidoc.tableOfContents"
-    id="apidoc.tableOfContents"
-><h1>table of contents</h1></a><ol>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
 
     <li class="apidocModuleLi"><a href="#apidoc.module.mailparser">module mailparser</a><ol>
 
@@ -197,26 +190,26 @@
 
         this.attachmentList = [];
 
-        this.splitter.on(&#x27;readable&#x27;, () =&#x3e; {
+        this.splitter.on('readable', () =&gt; {
             if (this.reading) {
                 return false;
             }
             this.readData();
         });
 
-        this.splitter.on(&#x27;end&#x27;, () =&#x3e; {
+        this.splitter.on('end', () =&gt; {
             this.endReceived = true;
             if (!this.reading) {
                 this.endStream();
             }
         });
 
-        this.splitter.on(&#x27;error&#x27;, err =&#x3e; {
+        this.splitter.on('error', err =&gt; {
             this.errored = true;
-            if (typeof this.waitingEnd === &#x27;function&#x27;) {
+            if (typeof this.waitingEnd === 'function') {
                 return this.waitingEnd(err);
             }
-            this.emit(&#x27;error&#x27;, err);
+            this.emit('error', err);
         });
     }
 
@@ -234,20 +227,20 @@
             return;
         }
 
-        this.processChunk(data, err =&#x3e; {
+        this.processChunk(data, err =&gt; {
             if (err) {
-                if (typeof this.waitingEnd === &#x27;function&#x27;) {
+                if (typeof this.waitingEnd === 'function') {
                     return this.waitingEnd(err);
                 }
-                return this.emit(&#x27;error&#x27;, err);
+                return this.emit('error', err);
             }
-            setImmediate(() =&#x3e; this.readData());
+            setImmediate(() =&gt; this.readData());
         });
     }
 
     endStream() {
         this.finished = true;
-        if (typeof this.waitingEnd === &#x27;function&#x27;) {
+        if (typeof this.waitingEnd === 'function') {
             this.waitingEnd();
         }
     }
@@ -258,7 +251,7 @@
         }
 
         if (this.splitter.write(chunk) === false) {
-            return this.splitter.once(&#x27;drain&#x27;, () =&#x3e; {
+            return this.splitter.once('drain', () =&gt; {
                 done();
             });
         } else {
@@ -267,18 +260,18 @@
     }
 
     _flush(done) {
-        setImmediate(() =&#x3e; this.splitter.end());
+        setImmediate(() =&gt; this.splitter.end());
         if (this.finished) {
             return this.cleanup(done);
         }
-        this.waitingEnd = () =&#x3e; this.cleanup(done);
+        this.waitingEnd = () =&gt; this.cleanup(done);
     }
 
     cleanup(done) {
-        if (this.curnode &#x26;&#x26; this.curnode.decoder) {
+        if (this.curnode &amp;&amp; this.curnode.decoder) {
             this.curnode.decoder.end();
         }
-        setImmediate(() =&#x3e; {
+        setImmediate(() =&gt; {
             this.push(this.getTextContent());
             done();
         });
@@ -286,16 +279,16 @@
 
     processHeaders(lines) {
         let headers = new Map();
-        (lines || []).forEach(line =&#x3e; {
+        (lines || []).forEach(line =&gt; {
             let key = line.key;
-            let value = ((libmime.decodeHeader(line.line) || {}).value || &#x27;&#x27;).toString().trim();
-            value = Buffer.from(value, &#x27;binary&#x27;).toString();
+            let value = ((libmime.decodeHeader(line.line) || {}).value || '').toString().trim();
+            value = Buffer.from(value, 'binary').toString();
             switch (key) {
-                case &#x27;content-type&#x27;:
-                case &#x27;content-disposition&#x27;:
-                case &#x27;dkim-signature&#x27;:
+                case 'content-type':
+                case 'content-disposition':
+                case 'dkim-signature':
                     value = libmime.parseHeaderValue(value);
-                    Object.keys(value &#x26;&#x26; value.params || {}).forEach(key =&#x3e; {
+                    Object.keys(value &amp;&amp; value.params || {}).forEach(key =&gt; {
                         try {
                             value.params[key] = libmime.decodeWords(value.params[key]);
                         } catch (E) {
@@ -303,9 +296,9 @@
                         }
                     });
                     break;
-                case &#x27;date&#x27;:
+                case 'date':
                     value = new Date(value);
-                    if (!value || value.toString() === &#x27;Invalid Date&#x27; || !value.getTime()) {
+                    if (!value || value.toString() === 'Invalid Date' || !value.getTime()) {
                         // date parsing failed :S
                         value = new Date();
                     } ...</pre></li>
@@ -335,7 +328,7 @@
             return callback();
         }
 
-        if (!encoding !== &#x27;buffer&#x27;) {
+        if (!encoding !== 'buffer') {
             chunk = Buffer.from(chunk, encoding);
         }
 
@@ -348,8 +341,8 @@
     _flush(callback) {
         if (this.chunklen) {
             let currentBody = Buffer.concat(this.chunks, this.chunklen);
-            let content = libmime.decodeFlowed(currentBody.toString(&#x27;binary&#x27;), this.options.delSp);
-            this.push(Buffer.from(content, &#x27;binary&#x27;));
+            let content = libmime.decodeFlowed(currentBody.toString('binary'), this.options.delSp);
+            this.push(Buffer.from(content, 'binary'));
         }
         return callback();
     }
@@ -366,10 +359,10 @@
         </a>
     </h2>
     <ul>
-    <li>description and source-code<pre class="apidocCodePre">(input, callback) =&#x3e; {
+    <li>description and source-code<pre class="apidocCodePre">(input, callback) =&gt; {
     let promise;
     if (!callback) {
-        promise = new Promise((resolve, reject) =&#x3e; {
+        promise = new Promise((resolve, reject) =&gt; {
             callback = callbackPromise(resolve, reject);
         });
     }
@@ -380,25 +373,25 @@
 
     let parser = new MailParser();
 
-    parser.on(&#x27;headers&#x27;, headers =&#x3e; {
+    parser.on('headers', headers =&gt; {
         mail.headers = headers;
     });
 
-    parser.on(&#x27;data&#x27;, data =&#x3e; {
-        if (data.type === &#x27;text&#x27;) {
-            Object.keys(data).forEach(key =&#x3e; {
-                if ([&#x27;text&#x27;, &#x27;html&#x27;, &#x27;textAsHtml&#x27;].includes(key)) {
+    parser.on('data', data =&gt; {
+        if (data.type === 'text') {
+            Object.keys(data).forEach(key =&gt; {
+                if (['text', 'html', 'textAsHtml'].includes(key)) {
                     mail[key] = data[key];
                 }
             });
         }
 
-        if (data.type === &#x27;attachment&#x27;) {
+        if (data.type === 'attachment') {
             mail.attachments.push(data);
 
             let chunks = [];
             let chunklen = 0;
-            data.content.on(&#x27;readable&#x27;, () =&#x3e; {
+            data.content.on('readable', () =&gt; {
                 let chunk;
                 while ((chunk = data.content.read()) !== null) {
                     chunks.push(chunk);
@@ -406,22 +399,22 @@
                 }
             });
 
-            data.content.on(&#x27;end&#x27;, () =&#x3e; {
+            data.content.on('end', () =&gt; {
                 data.content = Buffer.concat(chunks, chunklen);
                 data.release();
             });
         }
     });
 
-    parser.on(&#x27;end&#x27;, () =&#x3e; {
-        [&#x27;subject&#x27;, &#x27;references&#x27;, &#x27;date&#x27;, &#x27;to&#x27;, &#x27;from&#x27;, &#x27;to&#x27;, &#x27;cc&#x27;, &#x27;bcc&#x27;, &#x27;message-id&#x27;, &#x27;in-reply-to&#x27;, &#x27;reply-to&#x27;].forEach(key =&#x3e; {
+    parser.on('end', () =&gt; {
+        ['subject', 'references', 'date', 'to', 'from', 'to', 'cc', 'bcc', 'message-id', 'in-reply-to', 'reply-to'].forEach(key =&gt; {
             if (mail.headers.has(key)) {
-                mail[key.replace(/\-([a-z])/g, (m, c) =&#x3e; c.toUpperCase())] = mail.headers.get(key);
+                mail[key.replace(/\-([a-z])/g, (m, c) =&gt; c.toUpperCase())] = mail.headers.get(key);
             }
         });
 
-        parser.updateImageLinks((attachment, done) =&#x3e; done(false, &#x27;data:&#x27; + attachment.contentType + &#x27;;base64,&#x27; + attachment.content
-.toString(&#x27;base64&#x27;)), (err, html) =&#x3e; {
+        parser.updateImageLinks((attachment, done) =&gt; done(false, 'data:' + attachment.contentType + ';base64,' + attachment.content
+.toString('base64')), (err, html) =&gt; {
             if (err) {
                 return callback(err);
             }
@@ -431,7 +424,7 @@
         });
     });
 
-    if (typeof input === &#x27;string&#x27;) {
+    if (typeof input === 'string') {
         parser.end(Buffer.from(input));
     } else if (Buffer.isBuffer(input)) {
         parser.end(input);
@@ -457,7 +450,7 @@
     constructor(attachment, algo) {
         super();
         this.attachment = attachment;
-        this.algo = (algo || &#x27;md5&#x27;).toLowerCase();
+        this.algo = (algo || 'md5').toLowerCase();
         this.hash = crypto.createHash(algo);
         this.byteCount = 0;
     }
@@ -469,7 +462,7 @@
     }
 
     _flush(done) {
-        this.attachment.checksum = this.hash.digest(&#x27;hex&#x27;);
+        this.attachment.checksum = this.hash.digest('hex');
         this.attachment.size = this.byteCount;
         done();
     }
@@ -524,26 +517,26 @@
 
         this.attachmentList = [];
 
-        this.splitter.on(&#x27;readable&#x27;, () =&#x3e; {
+        this.splitter.on('readable', () =&gt; {
             if (this.reading) {
                 return false;
             }
             this.readData();
         });
 
-        this.splitter.on(&#x27;end&#x27;, () =&#x3e; {
+        this.splitter.on('end', () =&gt; {
             this.endReceived = true;
             if (!this.reading) {
                 this.endStream();
             }
         });
 
-        this.splitter.on(&#x27;error&#x27;, err =&#x3e; {
+        this.splitter.on('error', err =&gt; {
             this.errored = true;
-            if (typeof this.waitingEnd === &#x27;function&#x27;) {
+            if (typeof this.waitingEnd === 'function') {
                 return this.waitingEnd(err);
             }
-            this.emit(&#x27;error&#x27;, err);
+            this.emit('error', err);
         });
     }
 
@@ -561,20 +554,20 @@
             return;
         }
 
-        this.processChunk(data, err =&#x3e; {
+        this.processChunk(data, err =&gt; {
             if (err) {
-                if (typeof this.waitingEnd === &#x27;function&#x27;) {
+                if (typeof this.waitingEnd === 'function') {
                     return this.waitingEnd(err);
                 }
-                return this.emit(&#x27;error&#x27;, err);
+                return this.emit('error', err);
             }
-            setImmediate(() =&#x3e; this.readData());
+            setImmediate(() =&gt; this.readData());
         });
     }
 
     endStream() {
         this.finished = true;
-        if (typeof this.waitingEnd === &#x27;function&#x27;) {
+        if (typeof this.waitingEnd === 'function') {
             this.waitingEnd();
         }
     }
@@ -585,7 +578,7 @@
         }
 
         if (this.splitter.write(chunk) === false) {
-            return this.splitter.once(&#x27;drain&#x27;, () =&#x3e; {
+            return this.splitter.once('drain', () =&gt; {
                 done();
             });
         } else {
@@ -594,18 +587,18 @@
     }
 
     _flush(done) {
-        setImmediate(() =&#x3e; this.splitter.end());
+        setImmediate(() =&gt; this.splitter.end());
         if (this.finished) {
             return this.cleanup(done);
         }
-        this.waitingEnd = () =&#x3e; this.cleanup(done);
+        this.waitingEnd = () =&gt; this.cleanup(done);
     }
 
     cleanup(done) {
-        if (this.curnode &#x26;&#x26; this.curnode.decoder) {
+        if (this.curnode &amp;&amp; this.curnode.decoder) {
             this.curnode.decoder.end();
         }
-        setImmediate(() =&#x3e; {
+        setImmediate(() =&gt; {
             this.push(this.getTextContent());
             done();
         });
@@ -613,16 +606,16 @@
 
     processHeaders(lines) {
         let headers = new Map();
-        (lines || []).forEach(line =&#x3e; {
+        (lines || []).forEach(line =&gt; {
             let key = line.key;
-            let value = ((libmime.decodeHeader(line.line) || {}).value || &#x27;&#x27;).toString().trim();
-            value = Buffer.from(value, &#x27;binary&#x27;).toString();
+            let value = ((libmime.decodeHeader(line.line) || {}).value || '').toString().trim();
+            value = Buffer.from(value, 'binary').toString();
             switch (key) {
-                case &#x27;content-type&#x27;:
-                case &#x27;content-disposition&#x27;:
-                case &#x27;dkim-signature&#x27;:
+                case 'content-type':
+                case 'content-disposition':
+                case 'dkim-signature':
                     value = libmime.parseHeaderValue(value);
-                    Object.keys(value &#x26;&#x26; value.params || {}).forEach(key =&#x3e; {
+                    Object.keys(value &amp;&amp; value.params || {}).forEach(key =&gt; {
                         try {
                             value.params[key] = libmime.decodeWords(value.params[key]);
                         } catch (E) {
@@ -630,9 +623,9 @@
                         }
                     });
                     break;
-                case &#x27;date&#x27;:
+                case 'date':
                     value = new Date(value);
-                    if (!value || value.toString() === &#x27;Invalid Date&#x27; || !value.getTime()) {
+                    if (!value || value.toString() === 'Invalid Date' || !value.getTime()) {
                         // date parsing failed :S
                         value = new Date();
                     } ...</pre></li>
@@ -667,7 +660,7 @@
             return callback();
         }
 
-        if (!encoding !== &#x27;buffer&#x27;) {
+        if (!encoding !== 'buffer') {
             chunk = Buffer.from(chunk, encoding);
         }
 
@@ -680,8 +673,8 @@
     _flush(callback) {
         if (this.chunklen) {
             let currentBody = Buffer.concat(this.chunks, this.chunklen);
-            let content = libmime.decodeFlowed(currentBody.toString(&#x27;binary&#x27;), this.options.delSp);
-            this.push(Buffer.from(content, &#x27;binary&#x27;));
+            let content = libmime.decodeFlowed(currentBody.toString('binary'), this.options.delSp);
+            this.push(Buffer.from(content, 'binary'));
         }
         return callback();
     }
@@ -703,10 +696,10 @@
         </a>
     </h2>
     <ul>
-    <li>description and source-code<pre class="apidocCodePre">(input, callback) =&#x3e; {
+    <li>description and source-code<pre class="apidocCodePre">(input, callback) =&gt; {
     let promise;
     if (!callback) {
-        promise = new Promise((resolve, reject) =&#x3e; {
+        promise = new Promise((resolve, reject) =&gt; {
             callback = callbackPromise(resolve, reject);
         });
     }
@@ -717,25 +710,25 @@
 
     let parser = new MailParser();
 
-    parser.on(&#x27;headers&#x27;, headers =&#x3e; {
+    parser.on('headers', headers =&gt; {
         mail.headers = headers;
     });
 
-    parser.on(&#x27;data&#x27;, data =&#x3e; {
-        if (data.type === &#x27;text&#x27;) {
-            Object.keys(data).forEach(key =&#x3e; {
-                if ([&#x27;text&#x27;, &#x27;html&#x27;, &#x27;textAsHtml&#x27;].includes(key)) {
+    parser.on('data', data =&gt; {
+        if (data.type === 'text') {
+            Object.keys(data).forEach(key =&gt; {
+                if (['text', 'html', 'textAsHtml'].includes(key)) {
                     mail[key] = data[key];
                 }
             });
         }
 
-        if (data.type === &#x27;attachment&#x27;) {
+        if (data.type === 'attachment') {
             mail.attachments.push(data);
 
             let chunks = [];
             let chunklen = 0;
-            data.content.on(&#x27;readable&#x27;, () =&#x3e; {
+            data.content.on('readable', () =&gt; {
                 let chunk;
                 while ((chunk = data.content.read()) !== null) {
                     chunks.push(chunk);
@@ -743,22 +736,22 @@
                 }
             });
 
-            data.content.on(&#x27;end&#x27;, () =&#x3e; {
+            data.content.on('end', () =&gt; {
                 data.content = Buffer.concat(chunks, chunklen);
                 data.release();
             });
         }
     });
 
-    parser.on(&#x27;end&#x27;, () =&#x3e; {
-        [&#x27;subject&#x27;, &#x27;references&#x27;, &#x27;date&#x27;, &#x27;to&#x27;, &#x27;from&#x27;, &#x27;to&#x27;, &#x27;cc&#x27;, &#x27;bcc&#x27;, &#x27;message-id&#x27;, &#x27;in-reply-to&#x27;, &#x27;reply-to&#x27;].forEach(key =&#x3e; {
+    parser.on('end', () =&gt; {
+        ['subject', 'references', 'date', 'to', 'from', 'to', 'cc', 'bcc', 'message-id', 'in-reply-to', 'reply-to'].forEach(key =&gt; {
             if (mail.headers.has(key)) {
-                mail[key.replace(/\-([a-z])/g, (m, c) =&#x3e; c.toUpperCase())] = mail.headers.get(key);
+                mail[key.replace(/\-([a-z])/g, (m, c) =&gt; c.toUpperCase())] = mail.headers.get(key);
             }
         });
 
-        parser.updateImageLinks((attachment, done) =&#x3e; done(false, &#x27;data:&#x27; + attachment.contentType + &#x27;;base64,&#x27; + attachment.content
-.toString(&#x27;base64&#x27;)), (err, html) =&#x3e; {
+        parser.updateImageLinks((attachment, done) =&gt; done(false, 'data:' + attachment.contentType + ';base64,' + attachment.content
+.toString('base64')), (err, html) =&gt; {
             if (err) {
                 return callback(err);
             }
@@ -768,7 +761,7 @@
         });
     });
 
-    if (typeof input === &#x27;string&#x27;) {
+    if (typeof input === 'string') {
         parser.end(Buffer.from(input));
     } else if (Buffer.isBuffer(input)) {
         parser.end(input);
@@ -799,7 +792,7 @@
     constructor(attachment, algo) {
         super();
         this.attachment = attachment;
-        this.algo = (algo || &#x27;md5&#x27;).toLowerCase();
+        this.algo = (algo || 'md5').toLowerCase();
         this.hash = crypto.createHash(algo);
         this.byteCount = 0;
     }
@@ -811,7 +804,7 @@
     }
 
     _flush(done) {
-        this.attachment.checksum = this.hash.digest(&#x27;hex&#x27;);
+        this.attachment.checksum = this.hash.digest('hex');
         this.attachment.size = this.byteCount;
         done();
     }
@@ -828,3 +821,4 @@
     ]
 </div>
 </div>
+</body></html>
