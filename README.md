@@ -1,4 +1,7 @@
-# api documentation for  [mailparser (v2.0.3)](https://github.com/andris9/mailparser#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-mailparser.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-mailparser) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-mailparser.svg)](https://travis-ci.org/npmdoc/node-npmdoc-mailparser)
+# npmdoc-mailparser
+
+#### basic api documentation for  [mailparser (v2.0.4)](https://github.com/andris9/mailparser#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-mailparser.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-mailparser) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-mailparser.svg)](https://travis-ci.org/npmdoc/node-npmdoc-mailparser)
+
 #### Parse e-mails
 
 [![NPM](https://nodei.co/npm/mailparser.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/mailparser)
@@ -27,10 +30,10 @@
     "dependencies": {
         "addressparser": "1.0.1",
         "he": "1.1.1",
-        "html-to-text": "3.1.0",
+        "html-to-text": "3.2.0",
         "iconv-lite": "0.4.15",
         "libmime": "3.1.0",
-        "mailsplit": "4.0.0",
+        "mailsplit": "4.0.2",
         "marked": "0.3.6"
     },
     "description": "Parse e-mails",
@@ -46,13 +49,13 @@
     },
     "directories": {},
     "dist": {
-        "shasum": "28bb409b95341d421fbb57d4b1cf3532d89acb82",
-        "tarball": "https://registry.npmjs.org/mailparser/-/mailparser-2.0.3.tgz"
+        "shasum": "74a3b28a5c61b11ccaca29e0dfc004d4c5085842",
+        "tarball": "https://registry.npmjs.org/mailparser/-/mailparser-2.0.4.tgz"
     },
     "engines": {
         "node": ">=6.0.0"
     },
-    "gitHead": "4562dfdddf61b165cd24b9d181597140290d240f",
+    "gitHead": "9759f9f0c186cba1247c767fbf7a5d4e13b4fd1f",
     "homepage": "https://github.com/andris9/mailparser#readme",
     "license": "EUPL-1.1",
     "main": "index.js",
@@ -70,7 +73,8 @@
     "scripts": {
         "test": "grunt"
     },
-    "version": "2.0.3"
+    "version": "2.0.4",
+    "bin": {}
 }
 ```
 
